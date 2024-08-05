@@ -1,6 +1,6 @@
 # Changelog
 
-Toutes les modifications notables apportées au projet VBFileFind sont documentées dans ce fichier.
+Toutes les modifications notables apportées au projet VBWinDiff sont documentées dans ce fichier.
 
 ## [1.13] - 2024-08-04
 ### Ajouté

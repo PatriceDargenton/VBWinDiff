@@ -8,6 +8,7 @@ VBWinDiff permet d'ajouter des options utiles pour le comparateur de fichier tex
 - [Limitations](#limitations)
 - [Projets](#projets)
 - [Versions](#versions)
+- [Liens](#liens)
 
 ## Utilisation
 Placer un raccourci vers VBWinDiff.exe dans le dossier SendTo de Windows (droit admin. requis), et envoyer deux fichiers à comparer vers VBWinDiff via l'explorateur de fichier de Windows.
