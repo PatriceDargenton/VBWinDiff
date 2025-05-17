@@ -53,15 +53,33 @@ Public Class frmVBWinDiff
 
     Private m_iNbPages% = 1
     Private m_iNumPage% = 1
+    Private m_sCheminWinDiff$ = ""
     Private m_sCheminWinMerge$ = ""
+    Private m_sCheminTDTH$ = ""
 
 #End Region
 
 #Region "Initialisations"
 
     Private Sub frmVBWinDiff_Load(sender As Object, e As EventArgs) Handles Me.Load
+
         ' modUtilFichier peut maintenant être compilé dans une dll
         DefinirTitreApplication(sTitreMsg)
+
+        Dim sCheminWinDiff$ = Application.StartupPath & "\" & sNomExeWinDiff
+        If bFichierExiste(sCheminWinDiff, bPrompt:=True) Then
+            lbAlgo.Items.Add("WinDiff")
+            m_sCheminWinDiff = sCheminWinDiff
+        End If
+
+        If bLireCleBRWinMerge() Then lbAlgo.Items.Add("WinMerge")
+
+        Dim sCheminTDTH$ = Application.StartupPath & "\TextDiffToHtml\TextDiffToHtml.exe"
+        If bFichierExiste(sCheminTDTH, bPrompt:=True) Then
+            lbAlgo.Items.Add("TextDiffToHtml")
+            m_sCheminTDTH = sCheminTDTH
+        End If
+
     End Sub
 
     Private Sub frmVBWinDiff_Shown(sender As Object, e As EventArgs) _
@@ -107,6 +125,8 @@ Public Class frmVBWinDiff
             'sCheminFichier2 = Application.StartupPath & "\Fichier2.txt"
         End If
 
+        Me.lbAlgo.Text = "WinMerge"
+
         ' 04/01/2014 On pagine le second fichier par rapport aux tronçons du 1er, de taille fixe
         '  mieux vaut tjrs inverser
         If Not String.IsNullOrEmpty(sCheminFichier1) AndAlso
@@ -124,7 +144,7 @@ Public Class frmVBWinDiff
             End If
             ' 04/01/2014
             ' 09/05/2014 Paginer ssi Windiff (WinMerge : pas besoin)
-            If Me.chkWinDiff.Checked AndAlso
+            If Me.lbAlgo.Text = "WinDiff" AndAlso
                 (lLong1 > iTaillePage OrElse lLong2 > iTaillePage) Then Me.chkPaginer.Checked = True
         End If
 
@@ -140,15 +160,14 @@ Public Class frmVBWinDiff
             Me.chkPhrases.Checked = False
             Me.chkPaginer.Checked = False
             Me.chkRatio.Checked = False
-            Me.chkWinDiff.Checked = False
             Me.chkParag.Checked = False
             Me.chkNum.Checked = False
+            Me.lbAlgo.Text = "WinMerge"
+            'Me.lbAlgo.Text = "TextDiffToHtml"
         End If
 
         Me.lblChemin1.Text = sCheminFichier1
         Me.lblChemin2.Text = sCheminFichier2
-
-        PresicerInfoBullesWinDiff()
 
     End Sub
 
@@ -194,19 +213,6 @@ Public Class frmVBWinDiff
         If Not bFichierExiste(sCheminFichier1, bPrompt:=True) Then GoTo Fin
         If Not bFichierExiste(sCheminFichier2, bPrompt:=True) Then GoTo Fin
 
-        Dim sCheminWinDiff$ = Application.StartupPath & "\" & sNomExeWinDiff
-
-        ' Zip sur VBFrance : Si ._exe_ présent alors -> .exe
-        'If Not bFichierExiste(sCheminWinDiff, bPrompt:=True) Then GoTo Fin
-        If Not bFichierExiste(sCheminWinDiff) Then
-            Dim sCheminWinDiff2$ = Application.StartupPath & "\" & sNom_Exe_WinDiff
-            If Not bFichierExiste(sCheminWinDiff2) Then
-                If Not bFichierExiste(sCheminWinDiff, bPrompt:=True) Then GoTo Fin
-            End If
-            If Not bCopierFichier(sCheminWinDiff2, sCheminWinDiff) Then GoTo Fin
-            bSupprimerFichier(sCheminWinDiff2)
-        End If
-
         Const bDebugSplit As Boolean = False
 
         Dim sbSrc1, sbSrc2 As StringBuilder
@@ -238,7 +244,7 @@ Public Class frmVBWinDiff
 
         Else
 
-            If Me.chkWinDiff.Checked Then ' 09/05/2014
+            If Me.lbAlgo.Text = "WinDiff" Then
                 If Not bConfirmerTailleFichier(sCheminFichier1) Then GoTo Fin
                 If Not bConfirmerTailleFichier(sCheminFichier2) Then GoTo Fin
             End If
@@ -256,6 +262,7 @@ Public Class frmVBWinDiff
         If Not Me.chkEspaces.Checked Then iNbEcritures += 1
         If Not Me.chkAccents.Checked Then iNbEcritures += 1
         If Not Me.chkCasse.Checked Then iNbEcritures += 1
+        If Not Me.chkParag.Checked Then iNbEcritures += 1 ' 17/05/2025
         If Not Me.chkPonctuation.Checked Then iNbEcritures += 1
         If Not Me.chkQuotes.Checked Then iNbEcritures += 1
         Dim iNbEcrituresTot% = iNbEcritures
@@ -320,6 +327,14 @@ Public Class frmVBWinDiff
             'If bDebugSplit Then Debug.WriteLine("Fichier n°2 : [" & sbSrc2.ToString & "]")
         End If
 
+        ' 17/05/2025
+        If Not Me.chkParag.Checked AndAlso Me.chkPonctuation.Checked Then
+            If Not bDecouperParagraphesEnPhrasesAvecPonctuation(sCheminFichier1, sbSrc1, sbDest1) Then GoTo Fin
+            If Not bDecouperParagraphesEnPhrasesAvecPonctuation(sCheminFichier2, sbSrc2, sbDest2) Then GoTo Fin
+            sbSrc1 = sbDest1 : sbSrc2 = sbDest2
+            iNbEcritures -= 1 ' Décrémenter le nombre d'écriture restantes
+        End If
+
         If Not Me.chkPonctuation.Checked Then
             ' Option Mots possible ssi on ignore la ponctuation
             Dim bOptionComparerMots As Boolean = Not Me.chkPhrases.Checked
@@ -354,23 +369,20 @@ Public Class frmVBWinDiff
                 sbSrcOrig1, sbSrcOrig2, sEncodage1, sEncodage2) Then GoTo Fin
         End If
 
-        ' Gestion WinDiff ou WinMerge
-        If Not Me.chkWinDiff.Checked Then
-            If m_sCheminWinMerge.Length = 0 Then
-                If Not bLireCleBRWinMerge() Then GoTo Fin
-            End If
-        End If
+
 
         Const sGm$ = """"
         Dim sCmd$ = sGm & sCheminFichier1 & sGm & " " & sGm & sCheminFichier2 & sGm
         Dim p As New Process
 
-        If Not Me.chkWinDiff.Checked Then
-            ' 02/03/2014
-            p.StartInfo = New ProcessStartInfo(m_sCheminWinMerge)
-        Else
-            p.StartInfo = New ProcessStartInfo(sCheminWinDiff)
-        End If
+        Select Case Me.lbAlgo.Text ' 17/05/2025
+            Case "WinDiff"
+                p.StartInfo = New ProcessStartInfo(m_sCheminWinDiff)
+            Case "WinMerge"
+                p.StartInfo = New ProcessStartInfo(m_sCheminWinMerge)
+            Case "TextDiffToHtml"
+                p.StartInfo = New ProcessStartInfo(m_sCheminTDTH)
+        End Select
 
         p.StartInfo.Arguments = sCmd
         ' Il faut indiquer le chemin de l'exe si on n'utilise pas le shell
@@ -538,10 +550,13 @@ Fin:
         '  donc si on coche la ponctuation, on doit désactiver le découpage en mots (chkPhrases = True)
         If Me.chkPonctuation.Checked AndAlso Not Me.chkPhrases.Checked Then _
             Me.chkPhrases.Checked = True
+
+        ' 17/05/2025 Commenté
         ' Pareil pour les paragraphes
-        If Me.chkPonctuation.Checked AndAlso Not Me.chkParag.Checked Then _
-            Me.chkParag.Checked = True
+        'If Me.chkPonctuation.Checked AndAlso Not Me.chkParag.Checked Then _
+        '    Me.chkParag.Checked = True
         ' Pareil pour les numériques 03/06/2018
+
         If Me.chkPonctuation.Checked AndAlso Not Me.chkNum.Checked Then _
             Me.chkNum.Checked = True
 
@@ -567,10 +582,11 @@ Fin:
 
     Private Sub chkParag_Click(sender As Object, e As EventArgs) Handles chkParag.Click
 
+        ' 17/05/2025 Commenté
         ' Si on ignore les paragraphes dans le mode mot à mot, alors décocher la ponctuation
         ' (car le mode mot à mot est lancé uniquement dans ce cas)
-        If Not Me.chkParag.Checked AndAlso Me.chkPonctuation.Checked Then _
-            Me.chkPonctuation.Checked = False : Me.chkPhrases.Checked = False
+        'If Not Me.chkParag.Checked AndAlso Me.chkPonctuation.Checked Then _
+        '    Me.chkPonctuation.Checked = False : Me.chkPhrases.Checked = False
 
     End Sub
 
@@ -616,25 +632,6 @@ Fin:
             Me.chkRatio.Enabled = False
         End If
         Me.lblNumPage.Text = Me.m_iNumPage & "/" & Me.m_iNbPages
-
-    End Sub
-
-    Private Sub chkWinDiff_Click(sender As Object, e As System.EventArgs) Handles chkWinDiff.Click
-        PresicerInfoBullesWinDiff()
-    End Sub
-
-    Private Sub PresicerInfoBullesWinDiff()
-
-        If Not Me.chkWinDiff.Checked AndAlso bLireCleBRWinMerge() Then
-            Me.ToolTip1.SetToolTip(Me.chkWinDiff, "Décoché : Lancer WinMerge (sinon WinDiff)")
-        Else
-            If m_sCheminWinMerge.Length > 0 Then
-                Me.ToolTip1.SetToolTip(Me.chkWinDiff, "Coché : Lancer WinDiff (sinon WinMerge)")
-            Else
-                Me.ToolTip1.SetToolTip(Me.chkWinDiff,
-                    "Lancer WinDiff (sinon effectuer simplement les traitements)")
-            End If
-        End If
 
     End Sub
 

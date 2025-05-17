@@ -38,6 +38,9 @@ Module modConst
 
     Public Const iCodeASCIITiretMoyen% = 150 ' –
 
+    Const cChar3P As Char = "…"c ' 17/05/2025
+    Public Const sChar3P$ = cChar3P
+
     Public Const iIndiceNulString% = -1
 
 End Module

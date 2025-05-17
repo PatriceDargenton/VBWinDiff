@@ -1,5 +1,6 @@
 # VBWinDiff
 Interface d'options pour le comparateur WinDiff (et WinMerge)
+---
 
 VBWinDiff permet d'ajouter des options utiles pour le comparateur de fichier texte WinDiff, ainsi que WinMerge : l'idée, c'est d'effectuer un prétraitement des fichiers textes à comparer, de façon à ignorer des détails qui surchargent la comparaison via WinDiff ou WinMerge. Exemple : si vous avez des espaces insécables dans un fichier et pas dans l'autre, WinDiff vous affiche des tas de différences qui ne vous intéressent sans doute pas. De même pour la casse (majuscule/minuscule), les accents, la ponctuation. Il reste cependant des limitations : si les phrases sont trop longues, ou bien s'il y a un retour à la ligne dans une phrase, la détection ne fonctionne plus. Du coup, il y a une option permettant la comparaison mot à mot : WinDiff retrouve alors l'ensemble des différences sans ternir compte de la ponctuation, seulement des mots, ce qui est utile par exemple pour comparer deux versions d'un texte.
 
@@ -42,5 +43,7 @@ Voir le [Changelog.md](Changelog.md)
 ## Liens
 
 - [WinDiff](https://en.wikipedia.org/wiki/WinDiff) : [version 5.2.3790.0 du 24/03/2003](http://www.grigsoft.com/windiff.zip) livrée avec Windows 2003 (Microsoft Source Code Samples).
+
+- [TextDiffToHtml](https://github.com/PatriceDargenton/TextDiffToHtml) : Side by side Text diff to html in C#
 
 Documentation d'origine complète : [VBWinDiff.html](http://patrice.dargenton.free.fr/CodesSources/VBWinDiff.html)

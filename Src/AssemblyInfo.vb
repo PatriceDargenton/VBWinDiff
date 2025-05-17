@@ -9,7 +9,7 @@ Imports System.Reflection
     "VBWinDiff : Interface d'options pour le comparateur Windiff et WinMerge")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("VBWinDiff")>
-<Assembly: AssemblyCopyright("Copyright © 2024")>
+<Assembly: AssemblyCopyright("Copyright © 2025")>
 <Assembly: AssemblyTrademark("VBWinDiff")>
 
-<Assembly: AssemblyVersion("1.1.3.*")>
+<Assembly: AssemblyVersion("1.1.4.*")>

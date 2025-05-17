@@ -242,6 +242,8 @@ Module modVBWinDiff
         sbDest = sbSrc.Replace(Chr(iCodeASCIITiretMoyen) & " ", "- ")
         sbDest = sbSrc.Replace(" " & Chr(iCodeASCIITiretMoyen), " -")
 
+        sbDest = sbSrc.Replace(sChar3P, "...") ' 17/05/2025
+
     End Sub
 
     Public Sub EnleverEspaces(sSrc$,
@@ -274,6 +276,29 @@ Module modVBWinDiff
         sbDest.Append(sbSrc.ToString.ToLower)
 
         bEnleverMajuscules = True
+
+    End Function
+
+    ' 17/05/2025
+    Public Function bDecouperParagraphesEnPhrasesAvecPonctuation(sSrc$,
+        ByRef sbSrc As StringBuilder,
+        ByRef sbDest As StringBuilder) As Boolean
+
+        If IsNothing(sbSrc) Then sbSrc = sbLireFichier(sSrc)
+
+        sbDest = New StringBuilder
+
+        ' Utilisation d'une expression régulière pour découper en phrases
+        Dim sGm$ = Chr(iCodeASCIIGuillemet)
+        Dim pattern As String = "(?<=[\.!\?;:—]|\." + sGm + ")\s+" 'Avec Guillemets
+        Dim phrases() As String = Regex.Split(sbSrc.ToString, pattern)
+
+        ' Affichage des phrases
+        For Each phrase As String In phrases
+            sbDest.AppendLine(phrase)
+        Next
+
+        Return True
 
     End Function
 
