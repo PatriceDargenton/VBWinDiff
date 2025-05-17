@@ -6,7 +6,7 @@ Toutes les modifications notables apportées au projet VBWinDiff sont documenté
 ### Ajouté
 - Algorithme TextDiffToHtml ajouté, en plus de WinDiff et WinMerge
 - Option Découpage des paragraphes en phrases en conservant la ponctuation
-- Avec la gestion de espaces insécables, remplacé aussi le signe … en ...
+- Avec la gestion de espaces insécables, est remplacé aussi le signe … en ...
 
 ## [1.13] - 2024-08-04
 ### Ajouté
