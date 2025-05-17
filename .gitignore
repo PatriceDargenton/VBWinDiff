@@ -402,6 +402,7 @@ Archives
 Bak
 Tmp
 Codes
+TextDiffToHtml
 
 *.bat
 VBWinDiff.exe
@@ -413,3 +414,4 @@ VBWinDiff_ToDo.txt
 Fichier1.txt
 Fichier2.txt
 VBWinDiff.xml
+/TextDiffToHtml1
