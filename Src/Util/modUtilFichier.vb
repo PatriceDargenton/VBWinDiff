@@ -1253,6 +1253,33 @@ Retenter:
 
     End Function
 
+    Public Function bEcrireFichier(sCheminFichier$,
+        sbContenu As StringBuilder,
+        Encodage As Encoding,
+        Optional bPrompt As Boolean = True,
+        Optional ByRef sMsgErr$ = "") As Boolean
+
+        If Not bSupprimerFichier(sCheminFichier, bPromptErr:=bPrompt) Then Return False
+
+        If String.IsNullOrEmpty(sCheminFichier) Then _
+            Throw New ArgumentNullException("sCheminFichier")
+        If sbContenu Is Nothing Then Throw New ArgumentNullException("sbContenu")
+
+        Try
+            Using sw As New IO.StreamWriter(sCheminFichier, append:=False, encoding:=Encodage)
+                sw.Write(sbContenu.ToString())
+            End Using
+            Return True
+        Catch ex As Exception
+            Dim sMsg$ = "Impossible d'écrire les données dans le fichier :" & vbCrLf &
+                sCheminFichier & vbCrLf & sCauseErrPoss
+            sMsgErr = sMsg & vbCrLf & ex.Message
+            If bPrompt Then AfficherMsgErreur2(ex, "bEcrireFichier", sMsg)
+            Return False
+        End Try
+
+    End Function
+
     Public Function bEcrireFichier(sCheminFichier$, sContenu$,
         Optional bEncodageDefaut As Boolean = False,
         Optional bEncodageISO_8859_1 As Boolean = False,

@@ -2,6 +2,10 @@
 
 Toutes les modifications notables apportées au projet VBWinDiff sont documentées dans ce fichier.
 
+## [1.15] - 2026-10-03
+### Ajouté
+- Option activée par défaut dans le code source : préservation de l'encodage des fichiers à comparer (UTF8 Unicode ou Windows 1252 comme précédemment)
+
 ## [1.14] - 2025-05-17
 ### Ajouté
 - Algorithme TextDiffToHtml ajouté, en plus de WinDiff et WinMerge

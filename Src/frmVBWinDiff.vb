@@ -366,10 +366,8 @@ Public Class frmVBWinDiff
             If Not bEcrireFichiers(sbDest1, sbDest2,
                 sCheminFichier1, sCheminFichier1Orig,
                 sCheminFichier2, sCheminFichier2Orig, iIdxSrcOrig1, iIdxSrcOrig2,
-                sbSrcOrig1, sbSrcOrig2, sEncodage1, sEncodage2) Then GoTo Fin
+                sbSrcOrig1, sbSrcOrig2, sEncodage1, sEncodage2, encod1, encod2) Then GoTo Fin
         End If
-
-
 
         Const sGm$ = """"
         Dim sCmd$ = sGm & sCheminFichier1 & sGm & " " & sGm & sCheminFichier2 & sGm
@@ -403,7 +401,8 @@ Fin:
         sCheminSrc1$, sCheminSrcOrig1$,
         sCheminSrc2$, sCheminSrcOrig2$, iIdxSrcOrig1%, iIdxSrcOrig2%,
         sbSrc1Orig As StringBuilder, sbSrc2Orig As StringBuilder,
-        sEncodage1$, sEncodage2$) As Boolean
+        sEncodage1$, sEncodage2$,
+        encodage1 As Encoding, encodage2 As Encoding) As Boolean
 
         For iNumFichier As Integer = 1 To 2
             Dim sCheminDest$ = Application.StartupPath & "\" & sFichier & iNumFichier & sExtTxt
@@ -444,7 +443,13 @@ Fin:
                 sbPage = sbDest
             End If
 
-            If Not bEcrireFichier(sCheminDest, sbPage) Then Return False
+            If bPreserverEncodage Then ' 03/10/2026
+                Dim encod As Encoding = encodage1
+                If iNumFichier = 2 Then encod = encodage2
+                If Not bEcrireFichier(sCheminDest, sbPage, encod) Then Return False
+            Else
+                If Not bEcrireFichier(sCheminDest, sbPage) Then Return False
+            End If
 
             If bDebug AndAlso Me.chkPaginer.Checked Then
                 Dim sDest2$ = Application.StartupPath &

@@ -8,7 +8,7 @@ Module modDepart
     Public ReadOnly sTitreMsg$ = sNomAppli
     Public m_sTitreMsg$ = sTitreMsg
     Public Const sTitreMsgDescription$ = " : Interface d'options pour le comparateur WinDiff et WinMerge"
-    Public Const sDateVersionAppli$ = "17/05/2025"
+    Public Const sDateVersionAppli$ = "03/10/2026"
 
     Public ReadOnly sVersionAppli$ =
         My.Application.Info.Version.Major & "." &

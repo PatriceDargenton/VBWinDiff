@@ -43,4 +43,6 @@ Module modConst
 
     Public Const iIndiceNulString% = -1
 
+    Public Const bPreserverEncodage As Boolean = True ' 03/10/2026
+
 End Module

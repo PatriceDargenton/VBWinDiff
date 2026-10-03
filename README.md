@@ -44,6 +44,7 @@ Voir le [Changelog.md](Changelog.md)
 
 - [WinDiff](https://en.wikipedia.org/wiki/WinDiff) : [version 5.2.3790.0 du 24/03/2003](http://www.grigsoft.com/windiff.zip) livrée avec Windows 2003 (Microsoft Source Code Samples).
 
+- [DocToText](https://github.com/PatriceDargenton/DocToText) : MS-Word .docx & .doc converter to plain text (.txt) and Markdown (.md) in C#
 - [TextDiffToHtml](https://github.com/PatriceDargenton/TextDiffToHtml) : Side by side Text diff to html in C#
 
 Documentation d'origine complète : [VBWinDiff.html](http://patrice.dargenton.free.fr/CodesSources/VBWinDiff.html)
